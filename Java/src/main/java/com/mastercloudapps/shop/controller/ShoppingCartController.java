@@ -3,7 +3,6 @@ package com.mastercloudapps.shop.controller;
 import java.net.URI;
 
 import com.mastercloudapps.shop.controller.dto.response.ShoppingCartResponseDto;
-import com.mastercloudapps.shop.controller.exception.ProductNotFoundException;
 import com.mastercloudapps.shop.controller.exception.ShoppingCartNotFoundException;
 import com.mastercloudapps.shop.controller.exception.ShoppingCartProductNotFoundException;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartDto;
