@@ -12,4 +12,10 @@ public interface ShoppingCartUseCase {
 
     public Optional<FullShoppingCartDto> finishShoppingCartById(Long id);
 
+    public Optional<FullShoppingCartDto> deleteShoppingCartById(Long id);
+
+    public Optional<FullShoppingCartDto> addProductToShoppingCart(Long cartId, Long prodId, Integer quantity);
+
+    public Optional<FullShoppingCartDto> deleteProductFromShoppingCart(Long cartId, Long prodId);
+
 }

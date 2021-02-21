@@ -29,5 +29,20 @@ public class ShoppingCartUseCaseImpl implements ShoppingCartUseCase {
     public Optional<FullShoppingCartDto> finishShoppingCartById(Long id) {
         return shoppingCartRepository.finishShoppingCartById(id);
     }
+
+    @Override
+    public Optional<FullShoppingCartDto> deleteShoppingCartById(Long id) {
+        return shoppingCartRepository.deleteShoppingCartById(id);
+    }
+
+    @Override
+    public Optional<FullShoppingCartDto> addProductToShoppingCart(Long cartId, Long prodId, Integer quantity) {
+        return shoppingCartRepository.addProductToShoppingCartByIds(cartId, prodId, quantity);
+    }
+
+    @Override
+    public Optional<FullShoppingCartDto> deleteProductFromShoppingCart(Long cartId, Long prodId) {
+        return shoppingCartRepository.deleteProductFromShoppingCart(cartId, prodId);
+    }
     
 }

@@ -23,6 +23,13 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("Shopping Cart not found");
     }
 
+    @ExceptionHandler(ShoppingCartProductNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorResponse handleShoppingCartProductNotFoundException(ShoppingCartProductNotFoundException ex) {
+        return new ErrorResponse("Shopping Cart or Product not found");
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody

@@ -1,6 +1,5 @@
 package com.mastercloudapps.shop.infrastructure.adapter;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -8,10 +7,13 @@ import com.mastercloudapps.shop.domain.dto.FullProductDto;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartDto;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartProductDto;
 import com.mastercloudapps.shop.domain.dto.ShoppingCartDto;
+import com.mastercloudapps.shop.domain.repository.ShoppingCartProductJpaRepository;
 import com.mastercloudapps.shop.domain.repository.ShoppingCartRepository;
 import com.mastercloudapps.shop.infrastructure.model.ProductEntity;
 import com.mastercloudapps.shop.infrastructure.model.ShoppingCartEntity;
 import com.mastercloudapps.shop.infrastructure.model.ShoppingCartProduct;
+import com.mastercloudapps.shop.infrastructure.model.ShoppingCartProductId;
+import com.mastercloudapps.shop.infrastructure.repository.ProductJpaRepository;
 import com.mastercloudapps.shop.infrastructure.repository.ShoppingCartJpaRepository;
 
 import org.modelmapper.ModelMapper;
@@ -22,10 +24,19 @@ public class ShoppingCartRepositoryAdapter implements ShoppingCartRepository {
 
     private ModelMapper mapper;
     private ShoppingCartJpaRepository shoppingCartJpaRepository;
+    private ProductJpaRepository productJpaRepository;
+    private ShoppingCartProductJpaRepository shoppingCartProductJpaRepository;
 
-    public ShoppingCartRepositoryAdapter(ShoppingCartJpaRepository shoppingCartJpaRepository, ModelMapper mapper) {
-        this.shoppingCartJpaRepository = shoppingCartJpaRepository;
+    public ShoppingCartRepositoryAdapter(
+        ModelMapper mapper, 
+        ShoppingCartJpaRepository shoppingCartJpaRepository, 
+        ProductJpaRepository productJpaRepository,
+        ShoppingCartProductJpaRepository shoppingCartProductJpaRepository) {
+
         this.mapper = mapper;
+        this.shoppingCartJpaRepository = shoppingCartJpaRepository;
+        this.productJpaRepository = productJpaRepository;
+        this.shoppingCartProductJpaRepository = shoppingCartProductJpaRepository;
     }
 
     @Override
@@ -38,18 +49,65 @@ public class ShoppingCartRepositoryAdapter implements ShoppingCartRepository {
     @Override
     public Optional<FullShoppingCartDto> findShoppingCartById(Long id) {
         Optional<ShoppingCartEntity> shoppingCartEntity = shoppingCartJpaRepository.findById(id);
+        
         return shoppingCartEntity.map(ShoppingCartRepositoryAdapter::mapToFullShoppingCartDto);
     }
 
     @Override
     public Optional<FullShoppingCartDto> finishShoppingCartById(Long id) {
         Optional<ShoppingCartEntity> shoppingCartEntity = shoppingCartJpaRepository.findById(id);
+        
         if(shoppingCartEntity.isPresent()) {
             ShoppingCartEntity shoppingCart = shoppingCartEntity.get();
             shoppingCart.setCompleted(true);
             shoppingCartJpaRepository.save(shoppingCart);
-            //return savedShoppingCart.map(ShoppingCartRepositoryAdapter::mapToFullShoppingCartDto);
         }
+
+        return shoppingCartEntity.map(ShoppingCartRepositoryAdapter::mapToFullShoppingCartDto);
+    }
+
+    @Override
+    public Optional<FullShoppingCartDto> deleteShoppingCartById(Long id) {
+        Optional<ShoppingCartEntity> shoppingCartEntity = shoppingCartJpaRepository.findById(id);
+        
+        if(shoppingCartEntity.isPresent()) {
+            shoppingCartJpaRepository.deleteById(id);
+        }
+        
+        return shoppingCartEntity.map(ShoppingCartRepositoryAdapter::mapToFullShoppingCartDto);
+    }
+
+    @Override
+    public Optional<FullShoppingCartDto> addProductToShoppingCartByIds(Long cartId, Long prodId, Integer quantity) {
+        Optional<ShoppingCartEntity> shoppingCartEntity = shoppingCartJpaRepository.findById(cartId);
+        Optional<ProductEntity> productEntity = productJpaRepository.findById(prodId);
+
+        if(shoppingCartEntity.isPresent() && productEntity.isPresent()) {
+            ShoppingCartProduct shoppingCartProduct = new ShoppingCartProduct(
+                shoppingCartEntity.get(), productEntity.get(), quantity);
+            shoppingCartEntity.get().getProducts().add(shoppingCartProduct);
+            shoppingCartJpaRepository.save(shoppingCartEntity.get());
+        }
+
+        return shoppingCartEntity.map(ShoppingCartRepositoryAdapter::mapToFullShoppingCartDto);
+    }
+
+    @Override
+    public Optional<FullShoppingCartDto> deleteProductFromShoppingCart(Long cartId, Long prodId) {
+        Optional<ShoppingCartEntity> shoppingCartEntity = shoppingCartJpaRepository.findById(cartId);
+        Optional<ProductEntity> productEntity = productJpaRepository.findById(prodId);
+
+        if(shoppingCartEntity.isPresent() && productEntity.isPresent()) {
+
+            Optional<ShoppingCartProduct> shoppingCartProduct = shoppingCartProductJpaRepository.findById(
+                new ShoppingCartProductId(shoppingCartEntity.get().getId(), productEntity.get().getId())
+            );
+
+            if(shoppingCartProduct.isPresent()) {
+                shoppingCartProductJpaRepository.deleteById(shoppingCartProduct.get().getId());
+            }
+        }
+
         return shoppingCartEntity.map(ShoppingCartRepositoryAdapter::mapToFullShoppingCartDto);
     }
 
@@ -58,7 +116,10 @@ public class ShoppingCartRepositoryAdapter implements ShoppingCartRepository {
             shoppingCart.getId(), 
             shoppingCart.getProducts()
                 .stream()
-                .map(p -> new ModelMapper().map(p, FullShoppingCartProductDto.class))
+                .map(p -> new FullShoppingCartProductDto(
+                    new ModelMapper().map(p.getShop(), FullShoppingCartDto.class), 
+                    new ModelMapper().map(p.getProd(), FullProductDto.class), 
+                    p.getQuantity()))
                 .collect(Collectors.toList()), 
             shoppingCart.isCompleted()    
         );

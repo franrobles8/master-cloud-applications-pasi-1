@@ -11,7 +11,6 @@ public class FullShoppingCartProductDto {
     public FullShoppingCartProductDto() {
     }
 
-
     public FullShoppingCartProductDto(FullShoppingCartDto shoppingCart, FullProductDto product, Integer quantity) {
         this.shoppingCart = shoppingCart;
         this.product = product;

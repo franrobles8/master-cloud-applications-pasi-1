@@ -3,12 +3,15 @@ package com.mastercloudapps.shop.controller;
 import java.net.URI;
 
 import com.mastercloudapps.shop.controller.dto.response.ShoppingCartResponseDto;
+import com.mastercloudapps.shop.controller.exception.ProductNotFoundException;
 import com.mastercloudapps.shop.controller.exception.ShoppingCartNotFoundException;
+import com.mastercloudapps.shop.controller.exception.ShoppingCartProductNotFoundException;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartDto;
 import com.mastercloudapps.shop.service.ShoppingCartService;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,8 +51,33 @@ public class ShoppingCartController {
 
     @PatchMapping("/shoppingcarts/{id}")
     public ShoppingCartResponseDto finishShoppingCart(@PathVariable Long id) {
-        return shoppingCartService.finishShoppingCart(id)
+        return shoppingCartService.finish(id)
             .orElseThrow(ShoppingCartNotFoundException::new);
+    }
+
+    @DeleteMapping("/shoppingcarts/{id}")
+    public ShoppingCartResponseDto deleteShoppingCart(@PathVariable Long id) {
+        return shoppingCartService.delete(id)
+            .orElseThrow(ShoppingCartNotFoundException::new);
+    }
+
+    @PostMapping("/shoppingcarts/{cartId}/product/{prodId}/quantity/{prodQuantity}")
+    public ShoppingCartResponseDto addProductAndQuantityToShoppingCart(
+        @PathVariable Long cartId,
+        @PathVariable Long prodId,
+        @PathVariable Integer prodQuantity
+        ) {
+        return shoppingCartService.addProductToShoppingCart(cartId, prodId, prodQuantity)
+            .orElseThrow(ShoppingCartProductNotFoundException::new);
+    }
+
+    @DeleteMapping("/shoppingcarts/{cartId}/product/{prodId}")
+    public ShoppingCartResponseDto deleteProductFromShoppingCart(
+        @PathVariable Long cartId,
+        @PathVariable Long prodId
+        ) {
+        return shoppingCartService.deleteProductFromShoppingCart(cartId, prodId)
+            .orElseThrow(ShoppingCartProductNotFoundException::new);
     }
 
 }

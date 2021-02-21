@@ -25,8 +25,20 @@ public class ShoppingCartService {
         return shoppingCartUseCase.findShoppingCartById(id).map(ShoppingCartResponseDto::fromFullShoppingCartDto);
     }
 
-    public Optional<ShoppingCartResponseDto> finishShoppingCart(Long id) {
+    public Optional<ShoppingCartResponseDto> finish(Long id) {
         return shoppingCartUseCase.finishShoppingCartById(id).map(ShoppingCartResponseDto::fromFullShoppingCartDto);
+    }
+
+    public Optional<ShoppingCartResponseDto> delete(Long id) {
+        return shoppingCartUseCase.deleteShoppingCartById(id).map(ShoppingCartResponseDto::fromFullShoppingCartDto);
+    }
+
+    public Optional<ShoppingCartResponseDto> addProductToShoppingCart(Long cartId, Long prodId, Integer quantity) {
+        return shoppingCartUseCase.addProductToShoppingCart(cartId, prodId, quantity).map(ShoppingCartResponseDto::fromFullShoppingCartDto);
+    }
+
+    public Optional<ShoppingCartResponseDto> deleteProductFromShoppingCart(Long cartId, Long prodId) {
+        return shoppingCartUseCase.deleteProductFromShoppingCart(cartId, prodId).map(ShoppingCartResponseDto::fromFullShoppingCartDto);
     }
 
 }

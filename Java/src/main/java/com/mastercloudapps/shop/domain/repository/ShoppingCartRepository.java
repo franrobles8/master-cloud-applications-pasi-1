@@ -13,4 +13,10 @@ public interface ShoppingCartRepository {
 
     Optional<FullShoppingCartDto> finishShoppingCartById(Long id);
 
+    Optional<FullShoppingCartDto> deleteShoppingCartById(Long id);
+
+    Optional<FullShoppingCartDto> addProductToShoppingCartByIds(Long cartId, Long prodId, Integer quantity);
+
+    Optional<FullShoppingCartDto> deleteProductFromShoppingCart(Long cartId, Long prodId);
+
 }
