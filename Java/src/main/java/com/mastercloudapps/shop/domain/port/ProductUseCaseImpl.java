@@ -9,7 +9,7 @@ import com.mastercloudapps.shop.domain.repository.ProductRepository;
 
 public class ProductUseCaseImpl implements ProductUseCase {
 
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     public ProductUseCaseImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
