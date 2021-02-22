@@ -3,6 +3,9 @@ package com.mastercloudapps.shop.infrastructure.adapter;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.mastercloudapps.shop.controller.exception.ProductNotFoundException;
+import com.mastercloudapps.shop.controller.exception.ShoppingCartNotFoundException;
+import com.mastercloudapps.shop.controller.exception.ShoppingCartProductNotFoundException;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartDto;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartProductDto;
 import com.mastercloudapps.shop.domain.dto.ShoppingCartDto;
@@ -80,12 +83,18 @@ public class ShoppingCartRepositoryAdapter implements ShoppingCartRepository {
         Optional<ShoppingCartEntity> shoppingCartEntity = shoppingCartJpaRepository.findById(cartId);
         Optional<ProductEntity> productEntity = productJpaRepository.findById(prodId);
 
-        if(shoppingCartEntity.isPresent() && productEntity.isPresent()) {
-            ShoppingCartProduct shoppingCartProduct = new ShoppingCartProduct(
-                shoppingCartEntity.get(), productEntity.get(), quantity);
+        if(!shoppingCartEntity.isPresent()) {
+            throw new ShoppingCartNotFoundException();
+        }
+
+        if(!productEntity.isPresent()) {
+            throw new ProductNotFoundException();
+        }
+
+        ShoppingCartProduct shoppingCartProduct = new ShoppingCartProduct(
+            shoppingCartEntity.get(), productEntity.get(), quantity);
             shoppingCartEntity.get().getProducts().add(shoppingCartProduct);
             shoppingCartJpaRepository.save(shoppingCartEntity.get());
-        }
 
         return shoppingCartEntity.map(ShoppingCartRepositoryAdapter::mapToFullShoppingCartDto);
     }
@@ -95,16 +104,22 @@ public class ShoppingCartRepositoryAdapter implements ShoppingCartRepository {
         Optional<ShoppingCartEntity> shoppingCartEntity = shoppingCartJpaRepository.findById(cartId);
         Optional<ProductEntity> productEntity = productJpaRepository.findById(prodId);
 
-        if(shoppingCartEntity.isPresent() && productEntity.isPresent()) {
-
-            Optional<ShoppingCartProduct> shoppingCartProduct = shoppingCartProductJpaRepository.findById(
-                new ShoppingCartProductId(shoppingCartEntity.get().getId(), productEntity.get().getId())
-            );
-
-            if(shoppingCartProduct.isPresent()) {
-                shoppingCartProductJpaRepository.deleteById(shoppingCartProduct.get().getId());
-            }
+        if(!shoppingCartEntity.isPresent()) {
+            throw new ShoppingCartNotFoundException();
         }
+
+        if(!productEntity.isPresent()) {
+            throw new ProductNotFoundException();
+        }
+
+        Optional<ShoppingCartProduct> shoppingCartProduct = shoppingCartProductJpaRepository.findById(
+            new ShoppingCartProductId(shoppingCartEntity.get().getId(), productEntity.get().getId()));
+
+        if(!shoppingCartProduct.isPresent()) {
+            throw new ShoppingCartProductNotFoundException();
+        }
+
+        shoppingCartProductJpaRepository.deleteById(shoppingCartProduct.get().getId());
 
         return shoppingCartEntity.map(ShoppingCartRepositoryAdapter::mapToFullShoppingCartDto);
     }
