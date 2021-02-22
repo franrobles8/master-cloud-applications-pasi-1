@@ -3,7 +3,6 @@ package com.mastercloudapps.shop.service;
 import java.util.Optional;
 
 import com.mastercloudapps.shop.controller.dto.response.ShoppingCartResponseDto;
-import com.mastercloudapps.shop.controller.exception.ShoppingCartNotValidException;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartDto;
 import com.mastercloudapps.shop.domain.port.ShoppingCartUseCase;
 
@@ -27,10 +26,6 @@ public class ShoppingCartService {
     }
 
     public Optional<ShoppingCartResponseDto> finish(Long id) {
-        if(!ShoppingCartValidator.isValid(id)) {
-            throw new ShoppingCartNotValidException();
-        }
-
         return shoppingCartUseCase.finishShoppingCartById(id)
             .map(ShoppingCartResponseDto::fromFullShoppingCartDto);
     }

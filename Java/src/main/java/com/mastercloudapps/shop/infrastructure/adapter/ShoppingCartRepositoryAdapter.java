@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import com.mastercloudapps.shop.controller.exception.ProductNotFoundException;
 import com.mastercloudapps.shop.controller.exception.ShoppingCartNotFoundException;
+import com.mastercloudapps.shop.controller.exception.ShoppingCartNotValidException;
 import com.mastercloudapps.shop.controller.exception.ShoppingCartProductNotFoundException;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartDto;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartProductDto;
@@ -17,6 +18,7 @@ import com.mastercloudapps.shop.infrastructure.model.ShoppingCartProduct;
 import com.mastercloudapps.shop.infrastructure.model.ShoppingCartProductId;
 import com.mastercloudapps.shop.infrastructure.repository.ProductJpaRepository;
 import com.mastercloudapps.shop.infrastructure.repository.ShoppingCartJpaRepository;
+import com.mastercloudapps.shop.service.ShoppingCartValidator;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -58,11 +60,17 @@ public class ShoppingCartRepositoryAdapter implements ShoppingCartRepository {
     public Optional<FullShoppingCartDto> finishShoppingCartById(Long id) {
         Optional<ShoppingCartEntity> shoppingCartEntity = shoppingCartJpaRepository.findById(id);
         
-        if(shoppingCartEntity.isPresent()) {
-            ShoppingCartEntity shoppingCart = shoppingCartEntity.get();
-            shoppingCart.setCompleted(true);
-            shoppingCartJpaRepository.save(shoppingCart);
+        if(!shoppingCartEntity.isPresent()) {
+            throw new ShoppingCartNotFoundException();
         }
+
+        if(!ShoppingCartValidator.isValid(id)) {
+            throw new ShoppingCartNotValidException();
+        }
+
+        ShoppingCartEntity shoppingCart = shoppingCartEntity.get();
+        shoppingCart.setCompleted(true);
+        shoppingCartJpaRepository.save(shoppingCart);
 
         return shoppingCartEntity.map(ShoppingCartRepositoryAdapter::mapToFullShoppingCartDto);
     }
