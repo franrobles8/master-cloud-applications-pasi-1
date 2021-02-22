@@ -65,8 +65,8 @@ public class ShoppingCartTests {
         FullShoppingCartDto createdShoppingCart = this.shoppingCartUseCase.createShoppingCart();
         FullProductDto createdProduct = this.productUseCase.createProduct(productDto);
         FullShoppingCartProductDto fullShoppingCartProduct = new FullShoppingCartProductDto(
-            createdShoppingCart, 
-            createdProduct, 
+            createdShoppingCart.getId(), 
+            createdProduct.getId(), 
             quantity);
 
         productsNonEmpty.add(fullShoppingCartProduct);

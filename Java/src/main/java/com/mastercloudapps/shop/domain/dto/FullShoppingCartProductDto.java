@@ -2,35 +2,35 @@ package com.mastercloudapps.shop.domain.dto;
 
 public class FullShoppingCartProductDto {
 
-    private FullShoppingCartDto shoppingCart;
+    private Long shopId;
 
-    private FullProductDto product;
+    private Long prodId;
 
     private Integer quantity;
 
     public FullShoppingCartProductDto() {
     }
 
-    public FullShoppingCartProductDto(FullShoppingCartDto shoppingCart, FullProductDto product, Integer quantity) {
-        this.shoppingCart = shoppingCart;
-        this.product = product;
+    public FullShoppingCartProductDto(Long shopId, Long prodId, Integer quantity) {
+        this.shopId = shopId;
+        this.prodId = prodId;
         this.quantity = quantity;
     }
 
-    public FullShoppingCartDto getShoppingCart() {
-        return this.shoppingCart;
+    public Long getShopId() {
+        return this.shopId;
     }
 
-    public void setShoppingCart(FullShoppingCartDto shoppingCart) {
-        this.shoppingCart = shoppingCart;
+    public void setShopId(Long shopId) {
+        this.shopId = shopId;
     }
 
-    public FullProductDto getProduct() {
-        return this.product;
+    public Long getProdId() {
+        return this.prodId;
     }
 
-    public void setProduct(FullProductDto product) {
-        this.product = product;
+    public void setProdId(Long prodId) {
+        this.prodId = prodId;
     }
 
     public Integer getQuantity() {
@@ -39,6 +39,6 @@ public class FullShoppingCartProductDto {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }    
+    }
 
 }

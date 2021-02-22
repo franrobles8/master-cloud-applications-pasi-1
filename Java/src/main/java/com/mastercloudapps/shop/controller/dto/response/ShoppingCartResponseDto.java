@@ -5,20 +5,18 @@ import java.util.stream.Collectors;
 
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartDto;
 
-import org.modelmapper.ModelMapper;
-
 public class ShoppingCartResponseDto {
     
     private Long id;
 
-    private List<ProductResponseDto> products;
+    private List<ShoppingCartProductResponseDto> products;
 
     private boolean complete;
 
     public ShoppingCartResponseDto() {
     }
 
-    public ShoppingCartResponseDto(Long id, List<ProductResponseDto> products, boolean complete) {
+    public ShoppingCartResponseDto(Long id, List<ShoppingCartProductResponseDto> products, boolean complete) {
         this.id = id;
         this.products = products;
         this.complete = complete;
@@ -32,11 +30,11 @@ public class ShoppingCartResponseDto {
         this.id = id;
     }
 
-    public List<ProductResponseDto> getProducts() {
+    public List<ShoppingCartProductResponseDto> getProducts() {
         return this.products;
     }
 
-    public void setProducts(List<ProductResponseDto> products) {
+    public void setProducts(List<ShoppingCartProductResponseDto> products) {
         this.products = products;
     }
 
@@ -53,9 +51,12 @@ public class ShoppingCartResponseDto {
     }
 
     public static ShoppingCartResponseDto fromFullShoppingCartDto(FullShoppingCartDto fullShoppingCart) {
-        List<ProductResponseDto> products = fullShoppingCart.getProducts()
+
+        List<ShoppingCartProductResponseDto> products = fullShoppingCart.getProducts()
             .stream()
-            .map(product -> new ModelMapper().map(product, ProductResponseDto.class))
+            .map(product -> new ShoppingCartProductResponseDto(
+                    product.getProdId(), 
+                    product.getQuantity()))
             .collect(Collectors.toList());
 
         return new ShoppingCartResponseDto(

@@ -3,7 +3,6 @@ package com.mastercloudapps.shop.infrastructure.adapter;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.mastercloudapps.shop.domain.dto.FullProductDto;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartDto;
 import com.mastercloudapps.shop.domain.dto.FullShoppingCartProductDto;
 import com.mastercloudapps.shop.domain.dto.ShoppingCartDto;
@@ -49,7 +48,6 @@ public class ShoppingCartRepositoryAdapter implements ShoppingCartRepository {
     @Override
     public Optional<FullShoppingCartDto> findShoppingCartById(Long id) {
         Optional<ShoppingCartEntity> shoppingCartEntity = shoppingCartJpaRepository.findById(id);
-        
         return shoppingCartEntity.map(ShoppingCartRepositoryAdapter::mapToFullShoppingCartDto);
     }
 
@@ -116,13 +114,11 @@ public class ShoppingCartRepositoryAdapter implements ShoppingCartRepository {
             shoppingCart.getId(), 
             shoppingCart.getProducts()
                 .stream()
-                .map(p -> new FullShoppingCartProductDto(
-                    new ModelMapper().map(p.getShop(), FullShoppingCartDto.class), 
-                    new ModelMapper().map(p.getProd(), FullProductDto.class), 
-                    p.getQuantity()))
+                .map(p -> 
+                    new FullShoppingCartProductDto(p.getShop().getId(), p.getProd().getId(), p.getQuantity())
+                )
                 .collect(Collectors.toList()), 
-            shoppingCart.isCompleted()    
-        );
+            shoppingCart.isCompleted());
     }
     
 }

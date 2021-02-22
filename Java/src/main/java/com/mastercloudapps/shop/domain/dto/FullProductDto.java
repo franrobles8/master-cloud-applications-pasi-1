@@ -6,7 +6,6 @@ public class FullProductDto {
 
     private String name;
 
-
     public FullProductDto() {
     }
 
