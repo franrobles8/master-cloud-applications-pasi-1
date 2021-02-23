@@ -5,7 +5,7 @@ const router = express.Router();
 function init({ shoppingCartService }) {
     router.post('/', async (req, res) => {
         const shoppingCart = await shoppingCartService.create();
-        return res.send(shoppingCart);
+        return res.status(201).send(shoppingCart);
     });
 
     router.patch('/:id', async (req, res) => {

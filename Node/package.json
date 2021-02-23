@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "test": "npm test"
+    "test": "jest"
   },
   "author": "pd.parla&f.roblesc",
   "license": "ISC",
@@ -13,5 +13,8 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.11.17"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
   }
 }

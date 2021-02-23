@@ -9,7 +9,7 @@ const create = (mongoose) => {
                 },
                 quantity: {
                     type: Number,
-                    min: [1, 'Quantity cant be less than one'],
+                    min: [1, 'Quantity can\'t be less than one'],
                     required: true
                 }
             }],

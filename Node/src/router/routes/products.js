@@ -13,7 +13,7 @@ function init({ productService }) {
             name: req.body.name
         });
 
-        return res.send(newProduct);
+        return res.status(201).send(newProduct);
     });
 
     router.get('/:id', async (req, res) => {
